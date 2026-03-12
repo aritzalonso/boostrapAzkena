@@ -5,23 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pilota Denda</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
     <style>
-
         .karrusel-edukiontzia {
             max-width: 800px;
             margin: 0 auto;
         }
 
         .carousel-item img {
-            height: 400px;
-            object-fit: cover; 
-            border-radius: 0.5rem;
-        }
+    height: 400px;
+    width: 100%;
+    object-fit: contain; /* Irudia osorik ikusteko, moztu gabe */
+    background-color: #e9ecef; /* Atzealdeko kolore grisa hutsuneak betetzeko */
+    border-radius: 0.5rem;
+}
 
         .card-img-top {
             height: 250px;
             object-fit: cover;
+        }
+        
+        /* Saskiko elementuen irudientzat */
+        .saskia-irudia {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -34,9 +44,17 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="nireMenua">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item"><a class="nav-link active" href="#">Hasiera</a></li>
                     <li class="nav-item"><a class="nav-link" href="#eskaintzak">Eskaintzak</a></li>
+                    <li class="nav-item ms-md-3 mt-2 mt-md-0">
+                        <button class="btn btn-outline-light position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#saskiaOffcanvas" aria-controls="saskiaOffcanvas">
+                            <i class="bi bi-cart3"></i> Saskia
+                            <span id="saskiaKopurua" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                                0
+                            </span>
+                        </button>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -45,13 +63,17 @@
     <div class="container mt-4 mb-5 karrusel-edukiontzia">
         <div id="nireKarrusela" class="carousel slide shadow rounded" data-bs-ride="carousel">
             <div class="carousel-inner rounded">
+                
                 <div class="carousel-item active">
-                    <img src="data:image/jpeg;base64,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" class="d-block w-100" alt="Pilota materiala">
+                    <img src="descarga1.jpg" class="d-block w-100" alt="Pilota materiala">
                 </div>
+                
                 <div class="carousel-item">
-                    <img src="data:image/jpeg;base64,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" class="d-block w-100" alt="Sarrerak">
+                    <img src="descarga.jpg" class="d-block w-100" alt="Sarrerak">
                 </div>
+                
             </div>
+            
             <button class="carousel-control-prev" type="button" data-bs-target="#nireKarrusela" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Aurrekoa</span>
@@ -69,11 +91,11 @@
         <div class="row">
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm h-100 border-0">
-                    <img src="https://www.pelotadenda.com/UPLOAD/tienda_imagenesproductos/20210323105842385IMPR_Fichero.jpg" class="card-img-top rounded-top" alt="Pilota">
+                    <img src="goxua.jpg" class="card-img-top rounded-top" alt="Pilota">
                     <div class="card-body text-center d-flex flex-column">
                         <h5 class="card-title fw-bold">Eskuzko Pilota</h5>
                         <p class="card-text text-muted mb-4">Txapelketa ofizialetako pilota. 50€</p>
-                        <button class="btn btn-danger mt-auto w-100" data-bs-toggle="modal" data-bs-target="#erosiModala">Erosi</button>
+                        <button class="btn btn-danger mt-auto w-100 erosi-btn" data-bs-toggle="modal" data-bs-target="#erosiModala" data-id="1" data-izena="Eskuzko Pilota" data-prezioa="50" data-irudia="https://www.pelotadenda.com/UPLOAD/tienda_imagenesproductos/20210323105842385IMPR_Fichero.jpg">Erosi</button>
                     </div>
                 </div>
             </div>
@@ -84,26 +106,21 @@
                     <div class="card-body text-center d-flex flex-column">
                         <h5 class="card-title fw-bold">Pala Profesionala</h5>
                         <p class="card-text text-muted mb-4">Egurrezko pala onena. 80€</p>
-                        <button class="btn btn-danger mt-auto w-100" data-bs-toggle="modal" data-bs-target="#erosiModala">Erosi</button>
+                        <button class="btn btn-danger mt-auto w-100 erosi-btn" data-bs-toggle="modal" data-bs-target="#erosiModala" data-id="2" data-izena="Pala Profesionala" data-prezioa="80" data-irudia="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtk9WVYGuHgQUflOYfPJUs0T-HDHNxH-ibuw&s">Erosi</button>
                     </div>
                 </div>
             </div>
             
             <div class="col-md-4 mb-4">
-    <div class="card shadow-sm h-100 border-0">
-        
-        <img src="frontoia.jpg" class="card-img-top rounded-top" alt="Frontoia">
-        
-        <div class="card-body text-center d-flex flex-column">
-            <h5 class="card-title fw-bold">Finalerako Sarrera</h5>
-            <p class="card-text text-muted mb-4">Bizkaia Frontoian. 30€</p>
-            <button class="btn btn-danger mt-auto w-100" data-bs-toggle="modal" data-bs-target="#erosiModala">Erosi</button>
-        </div>
-        
-    </div>
-</div>
+                <div class="card shadow-sm h-100 border-0">
+                    <img src="frontoia.jpg" class="card-img-top rounded-top" alt="Frontoia">
+                    <div class="card-body text-center d-flex flex-column">
+                        <h5 class="card-title fw-bold">Finalerako Sarrera</h5>
+                        <p class="card-text text-muted mb-4">Bizkaia Frontoian. 30€</p>
+                        <button class="btn btn-danger mt-auto w-100 erosi-btn" data-bs-toggle="modal" data-bs-target="#erosiModala" data-id="3" data-izena="Finalerako Sarrera" data-prezioa="30" data-irudia="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtk9WVYGuHgQUflOYfPJUs0T-HDHNxH-ibuw&s">Erosi</button>
+                    </div>
+                </div>
             </div>
-
         </div>
     </div>
 
@@ -115,16 +132,167 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Itxi"></button>
                 </div>
                 <div class="modal-body">
-                    <p class="mb-0">Ziur zaude produktu hau saskira gehitu nahi duzula?</p>
+                    <p id="modalTestua" class="mb-0">Ziur zaude produktu hau saskira gehitu nahi duzula?</p>
                 </div>
                 <div class="modal-footer border-0">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Utzi</button>
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Saskira gehitu</button>
+                    <button type="button" class="btn btn-success" id="baieztatuErosketa">Saskira gehitu</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="saskiaOffcanvas" aria-labelledby="saskiaOffcanvasLabel">
+        <div class="offcanvas-header bg-dark text-white">
+            <h5 class="offcanvas-title fw-bold" id="saskiaOffcanvasLabel"><i class="bi bi-cart3"></i> Zure Saskia</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Itxi"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column">
+            <div id="saskiaEdukiak" class="flex-grow-1 overflow-auto mb-3">
+                <p class="text-muted text-center mt-5">Saskia hutsik dago une honetan.</p>
+            </div>
+            
+            <div class="border-top pt-3 mt-auto">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0">Guztira:</h5>
+                    <h4 class="fw-bold text-danger mb-0"><span id="saskiaGuztira">0</span>€</h4>
+                </div>
+                <button class="btn btn-success w-100 fw-bold py-2" id="ordainduBotoia" disabled>Ordaindu <i class="bi bi-credit-card ms-1"></i></button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Aldagai nagusiak
+        let saskia = [];
+        let unekoProduktua = null;
+
+        // HTML elementuak eskuratu
+        const saskiaKopuruaBadge = document.getElementById('saskiaKopurua');
+        const saskiaEdukiak = document.getElementById('saskiaEdukiak');
+        const saskiaGuztira = document.getElementById('saskiaGuztira');
+        const ordainduBotoia = document.getElementById('ordainduBotoia');
+        const erosiModala = document.getElementById('erosiModala');
+        const baieztatuErosketaBtn = document.getElementById('baieztatuErosketa');
+        
+        const bsModal = new bootstrap.Modal(erosiModala);
+
+        erosiModala.addEventListener('show.bs.modal', function (event) {
+            const botoia = event.relatedTarget;
+            
+            unekoProduktua = {
+                id: botoia.getAttribute('data-id'),
+                izena: botoia.getAttribute('data-izena'),
+                prezioa: parseFloat(botoia.getAttribute('data-prezioa')),
+                irudia: botoia.getAttribute('data-irudia'),
+                kantitatea: 1
+            };
+            
+            document.getElementById('modalTestua').innerHTML = `Ziur zaude <strong>${unekoProduktua.izena}</strong> (${unekoProduktua.prezioa}€) saskira gehitu nahi duzula?`;
+        });
+
+        baieztatuErosketaBtn.addEventListener('click', function() {
+            if (unekoProduktua) {
+
+                const existitzenDa = saskia.find(item => item.id === unekoProduktua.id);
+                
+                if (existitzenDa) {
+                    existitzenDa.kantitatea++;
+                } else {
+                    saskia.push(unekoProduktua); 
+                }
+                
+                eguneratuSaskia();
+                
+                // Modala itxi
+                bsModal.hide();
+                
+                 const bsOffcanvas = new bootstrap.Offcanvas(document.getElementById('saskiaOffcanvas'));
+                 bsOffcanvas.show();
+            }
+        });
+        function eguneratuSaskia() {
+
+            if (saskia.length === 0) {
+                saskiaEdukiak.innerHTML = '<p class="text-muted text-center mt-5">Saskia hutsik dago une honetan.</p>';
+                saskiaKopuruaBadge.classList.add('d-none');
+                saskiaGuztira.textContent = '0';
+                ordainduBotoia.disabled = true;
+                return;
+            }
+
+            let html = '';
+            let batura = 0;
+            let artikuluKopurua = 0;
+
+            saskia.forEach((produktu, index) => {
+                const azpiBatura = produktu.prezioa * produktu.kantitatea;
+                batura += azpiBatura;
+                artikuluKopurua += produktu.kantitatea;
+
+                html += `
+                    <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                        <img src="${produktu.irudia}" alt="${produktu.izena}" class="saskia-irudia me-3">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0 fw-bold">${produktu.izena}</h6>
+                            <small class="text-muted">${produktu.prezioa}€ / unitate</small>
+                            <div class="d-flex align-items-center mt-2">
+                                <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="aldatuKantitatea('${produktu.id}', -1)">-</button>
+                                <span class="mx-2 fw-bold">${produktu.kantitatea}</span>
+                                <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="aldatuKantitatea('${produktu.id}', 1)">+</button>
+                            </div>
+                        </div>
+                        <div class="text-end ms-2">
+                            <p class="fw-bold mb-1">${azpiBatura}€</p>
+                            <button class="btn btn-sm text-danger" onclick="ezabatuProduktua('${produktu.id}')"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Interfazea pantailaratu
+            saskiaEdukiak.innerHTML = html;
+            saskiaGuztira.textContent = batura;
+            ordainduBotoia.disabled = false;
+            
+            // Nabigazio-barrako txapa eguneratu
+            saskiaKopuruaBadge.textContent = artikuluKopurua;
+            saskiaKopuruaBadge.classList.remove('d-none');
+        }
+
+        // 4. Kantitatea aldatzeko funtzioa (+ edo - sakatzean)
+        window.aldatuKantitatea = function(id, aldaketa) {
+            const produktuIndex = saskia.findIndex(item => item.id === id);
+            
+            if (produktuIndex !== -1) {
+                saskia[produktuIndex].kantitatea += aldaketa;
+                
+                // Kantitatea 0ra iristen bada, ezabatu egingo dugu
+                if (saskia[produktuIndex].kantitatea <= 0) {
+                    saskia.splice(produktuIndex, 1);
+                }
+                
+                eguneratuSaskia();
+            }
+        };
+
+        // 5. Produktua zuzenean ezabatzeko funtzioa (Zakarroiaren ikonoa)
+        window.ezabatuProduktua = function(id) {
+            saskia = saskia.filter(item => item.id !== id);
+            eguneratuSaskia();
+        };
+        document.addEventListener("DOMContentLoaded", function() {
+    const karruselElementua = document.getElementById('nireKarrusela');
+    if (karruselElementua) {
+        new bootstrap.Carousel(karruselElementua, {
+            interval: 2000, // 3 segundoro automatikoki pasatzeko (ez baduzu nahi, jarri 'false')
+            wrap: true      // Bukaerara heltzean hasierara itzultzeko
+        });
+    }
+});
+    
+    </script>
 </body>
 </html>
